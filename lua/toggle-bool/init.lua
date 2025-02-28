@@ -18,7 +18,7 @@ local function find_toggle_word(line, start)
 		local key_index = line:find(key, start)
 		local value_index = line:find(value, start)
 
-		if key_index then
+		if key_index and (key_index == 1 or (key_index > 1 and line:sub(key_index - 1, key_index):match("[^%w]"))) then
 			table.insert(ocurrences, { index = key_index, found_word = key, substitute_word = value })
 		end
 
