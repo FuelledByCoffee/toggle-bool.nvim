@@ -8,15 +8,15 @@ M.conf = {
 }
 
 -- Finds the first ocurrence of a toggle word in a line
-local function find_toggle_word(line)
+local function find_toggle_word(line, start)
 	local found_word, substitute_word = "", ""
 	local min_index = #line + 1
 	local ocurrences = {}
 
 	-- Finds first ocurrences of all toggle words
 	for key, value in pairs(M.conf.toggles) do
-		local key_index = line:find(key)
-		local value_index = line:find(value)
+		local key_index = line:find(key, start)
+		local value_index = line:find(value, start)
 
 		if key_index then
 			table.insert(ocurrences, { index = key_index, found_word = key, substitute_word = value })
@@ -44,18 +44,19 @@ M.toggle_bool = function()
 		vim.print("toggl-bool.nvim: Cannot toggle. Buffer is not modifiable.")
 		return
 	end
+
 	local line = vim.api.nvim_get_current_line()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-	local sub_line = line:sub(col + 1)
 
-	local found_word, substitute_word, pos = find_toggle_word(sub_line)
+	local found_word, substitute_word, pos = find_toggle_word(line, col + 1)
 
 	if found_word ~= "" then
-		local new_sub_line = sub_line:gsub(found_word, substitute_word, 1)
-		local new_line = line:sub(1, col) .. new_sub_line
+		local new_line = line:gsub(found_word, substitute_word, pos)
 
-		vim.api.nvim_set_current_line(new_line)
-		vim.api.nvim_win_set_cursor(0, { row, col + pos - 1 })
+		if col == 1 or line:sub(col - 1, col):match("%w") == nil then
+			vim.api.nvim_set_current_line(new_line)
+			vim.api.nvim_win_set_cursor(0, { row, pos - 1 })
+		end
 	end
 end
 
