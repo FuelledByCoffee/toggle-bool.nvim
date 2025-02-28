@@ -15,8 +15,8 @@ local function find_toggle_word(line)
 
 	-- Finds first ocurrences of all toggle words
 	for key, value in pairs(M.conf.toggles) do
-		local key_index = string.find(line, key)
-		local value_index = string.find(line, value)
+		local key_index = line:find(key)
+		local value_index = line:find(value)
 
 		if key_index then
 			table.insert(ocurrences, { index = key_index, found_word = key, substitute_word = value })
@@ -46,13 +46,13 @@ M.toggle_bool = function()
 	end
 	local line = vim.api.nvim_get_current_line()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-	local sub_line = string.sub(line, col + 1)
+	local sub_line = line:sub(col + 1)
 
 	local found_word, substitute_word = find_toggle_word(sub_line)
 
 	if found_word ~= "" then
-		local new_sub_line = string.gsub(sub_line, found_word, substitute_word, 1)
-		local new_line = string.sub(line, 1, col) .. new_sub_line
+		local new_sub_line = sub_line:gsub(found_word, substitute_word, 1)
+		local new_line = line:sub(1, col) .. new_sub_line
 
 		vim.api.nvim_win_set_cursor(0, { row, col })
 		vim.api.nvim_set_current_line(new_line)
