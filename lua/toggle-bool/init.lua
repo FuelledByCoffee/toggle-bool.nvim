@@ -18,18 +18,34 @@ local function find_toggle_word(line, start)
 		local key_index = line:find(key, start)
 		local value_index = line:find(value, start)
 
-		if key_index and (key_index == 1 or (key_index > 1 and line:sub(key_index - 1, key_index):match("[^%w]"))) then
+		if
+			key_index
+			and (key_index == 1 or (key_index > 1 and line:sub(key_index - 1, key_index):match("[^%w]")))
+		then
 			table.insert(ocurrences, { index = key_index, found_word = key, substitute_word = value })
 		end
 
-		if value_index then
-			table.insert(ocurrences, { index = value_index, found_word = value, substitute_word = key })
+		if
+			value_index
+			and (
+				value_index == 1
+				or (value_index > 1 and line:sub(value_index - 1, value_index):match("[^%w]"))
+			)
+		then
+			table.insert(ocurrences, {
+				index = value_index,
+				found_word = value,
+				substitute_word = key,
+			})
 		end
 	end
 
 	-- Finds the first ocurrence of all ocurrences
 	for _, ocurrence in ipairs(ocurrences) do
-		if ocurrence.index < min_index or (ocurrence.index == min_index and #ocurrence.found_word > #found_word) then
+		if
+			ocurrence.index < min_index
+			or (ocurrence.index == min_index and #ocurrence.found_word > #found_word)
+		then
 			min_index = ocurrence.index
 			found_word = ocurrence.found_word
 			substitute_word = ocurrence.substitute_word
@@ -69,7 +85,13 @@ M.setup = function(opts)
 	if opts.mapping then
 		M.conf.mapping = opts.mapping
 	end
-	vim.keymap.set("n", M.conf.mapping, M.toggle_bool, { desc = opts.map_description or "Toggle bool/option" })
+	vim.keymap.set(
+		"n",
+		M.conf.mapping,
+		M.toggle_bool,
+		{ desc = opts.map_description or "Toggle bool/option" }
+	)
 end
 
 return M
+-- vim: ts=2
