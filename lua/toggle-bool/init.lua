@@ -36,7 +36,7 @@ local function find_toggle_word(line)
 		end
 	end
 
-	return found_word, substitute_word
+	return found_word, substitute_word, min_index
 end
 
 M.toggle_bool = function()
@@ -48,14 +48,14 @@ M.toggle_bool = function()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	local sub_line = line:sub(col + 1)
 
-	local found_word, substitute_word = find_toggle_word(sub_line)
+	local found_word, substitute_word, pos = find_toggle_word(sub_line)
 
 	if found_word ~= "" then
 		local new_sub_line = sub_line:gsub(found_word, substitute_word, 1)
 		local new_line = line:sub(1, col) .. new_sub_line
 
-		vim.api.nvim_win_set_cursor(0, { row, col })
 		vim.api.nvim_set_current_line(new_line)
+		vim.api.nvim_win_set_cursor(0, { row, col + pos - 1 })
 	end
 end
 
