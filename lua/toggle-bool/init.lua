@@ -36,7 +36,7 @@ local function find_toggle_word(line, start)
 		end
 	end
 
-	return found_word, substitute_word, min_index
+	return found_word, substitute_word, min_index - 1
 end
 
 M.toggle_bool = function()
@@ -50,14 +50,23 @@ M.toggle_bool = function()
 
 	local found_word, substitute_word, pos = find_toggle_word(line, col + 1)
 
+	::continue::
 	if found_word ~= "" then
-		local sub_line = line:sub(col + 1)
-		local new_line = line:sub(1, col) .. sub_line:gsub(found_word, substitute_word, 1)
+		-- Check if found_word is part of a bigger word
+		local before, after = pos - 1 , pos + found_word:len()
+		if (pos > 1 and line:sub(before, before + 1):match("%w"))
+			or (after < line:len() and line:sub(after, after + 1):match("%w"))
+		then
 
-		-- if pos == 1 or line:sub(pos - 1, pos):match("%w") == nil then
+			found_word, substitute_word, pos = find_toggle_word(line, pos + 2)
+			goto continue
+		end
+
+		local sub_line = line:sub(pos + 1)
+		local new_line = line:sub(1, pos) .. sub_line:gsub(found_word, substitute_word, 1)
+
 		vim.api.nvim_set_current_line(new_line)
-		vim.api.nvim_win_set_cursor(0, { row, pos - 1 })
-		-- end
+		vim.api.nvim_win_set_cursor(0, { row, pos })
 	end
 end
 
