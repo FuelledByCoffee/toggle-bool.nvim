@@ -45,7 +45,7 @@ M.toggle_bool = function()
 		return
 	end
 	local line = vim.api.nvim_get_current_line()
-	local _, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	local sub_line = string.sub(line, col + 1)
 
 	local found_word, substitute_word = find_toggle_word(sub_line)
@@ -53,6 +53,8 @@ M.toggle_bool = function()
 	if found_word ~= "" then
 		local new_sub_line = string.gsub(sub_line, found_word, substitute_word, 1)
 		local new_line = string.sub(line, 1, col) .. new_sub_line
+
+		vim.api.nvim_win_set_cursor(0, { row, col })
 		vim.api.nvim_set_current_line(new_line)
 	end
 end
