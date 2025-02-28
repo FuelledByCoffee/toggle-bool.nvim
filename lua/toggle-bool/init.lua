@@ -53,10 +53,10 @@ M.toggle_bool = function()
 	if found_word ~= "" then
 		local new_line = line:gsub(found_word, substitute_word, pos)
 
-		if col == 1 or line:sub(col - 1, col):match("%w") == nil then
-			vim.api.nvim_set_current_line(new_line)
-			vim.api.nvim_win_set_cursor(0, { row, pos - 1 })
-		end
+		-- if pos == 1 or line:sub(pos - 1, pos):match("%w") == nil then
+		vim.api.nvim_set_current_line(new_line)
+		vim.api.nvim_win_set_cursor(0, { row, pos - 1 })
+		-- end
 	end
 end
 
