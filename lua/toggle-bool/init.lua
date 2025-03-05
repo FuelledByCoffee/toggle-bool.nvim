@@ -1,15 +1,15 @@
 local M = {}
 M.conf = {
-	mapping = "<leader>tt",
+	mapping = '<leader>tt',
 	toggles = {
-		["false"] = "true",
-		["False"] = "True",
+		['false'] = 'true',
+		['False'] = 'True',
 	},
 }
 
 -- Finds the first ocurrence of a toggle word in a line
 local function find_toggle_word(line, start)
-	local found_word, substitute_word = "", ""
+	local found_word, substitute_word = '', ''
 	local min_index = #line + 1
 	local ocurrences = {}
 
@@ -41,7 +41,7 @@ end
 
 M.toggle_bool = function()
 	if vim.o.modifiable == false then
-		vim.print("toggl-bool.nvim: Cannot toggle. Buffer is not modifiable.")
+		vim.print('toggl-bool.nvim: Cannot toggle. Buffer is not modifiable.')
 		return
 	end
 
@@ -51,7 +51,7 @@ M.toggle_bool = function()
 	local found_word, substitute_word, pos = find_toggle_word(line, col + 1)
 
 	::continue::
-	if found_word ~= "" then
+	if found_word ~= '' then
 		-- Check if found_word is part of a bigger word
 		local before, after = pos - 1 , pos + found_word:len()
 		if (pos > 1 and line:sub(before, before + 1):match("%w"))
@@ -73,12 +73,12 @@ end
 M.setup = function(opts)
 	opts = opts or {}
 	if opts.additional_toggles then
-		M.conf.toggles = vim.tbl_extend("force", M.conf.toggles, opts.additional_toggles)
+		M.conf.toggles = vim.tbl_extend('force', M.conf.toggles, opts.additional_toggles)
 	end
 	if opts.mapping then
 		M.conf.mapping = opts.mapping
 	end
-	vim.keymap.set("n", M.conf.mapping, M.toggle_bool, { desc = opts.map_description or "Toggle bool/option" })
+	vim.keymap.set('n', M.conf.mapping, M.toggle_bool, { desc = opts.map_description or 'Toggle bool/option' })
 end
 
 return M
